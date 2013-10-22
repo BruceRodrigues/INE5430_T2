@@ -1,0 +1,17 @@
+/* Jason Project */
+
+MAS chessQueens {
+
+    infrastructure: Centralised
+
+    environment: Board
+
+    agents:
+        queen1;
+
+        queen2;
+
+        board;
+
+}
+
