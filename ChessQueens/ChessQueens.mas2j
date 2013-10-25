@@ -13,5 +13,17 @@ MAS chessQueens {
 
         board;
 
+        queen3;
+
+        queen4;
+
+        queen5;
+
+        queen6;
+
+        queen7;
+
+        queen8;
+
 }
 
