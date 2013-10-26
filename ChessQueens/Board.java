@@ -12,15 +12,17 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Random;
 import java.util.logging.Logger;
+import java.util.Random;
 
 public class Board extends Environment {
 	
-	public static final Term run = Literal.parseLiteral("run()");
-	public static final Term kill = Literal.parseLiteral("canKill()");
+	//public static final Term run = Literal.parseLiteral("run()");
+	//public static final Term kill = Literal.parseLiteral("canKill()");
 	
-	public static final Literal q1 = Literal.parseLiteral("queen(q1)");
+	//public static final Literal q1 = Literal.parseLiteral("queen(q1)");
 	
     private Logger logger = Logger.getLogger("ChessQueens.mas2j."+Board.class.getName());
+	Random random = new Random(System.currentTimeMillis());
 	
 	private BoardModel model;
 	private BoardView view;
@@ -36,19 +38,31 @@ public class Board extends Environment {
 
     @Override
     public boolean executeAction(String agName, Structure action) {
-        logger.info("executing: "+action);
+        logger.info(agName + " executing: "+action);
+		boolean kill = true;
 		
-		int i = model.canKill(1);
-		if(i != -1) {
-			logger.info(agName+" can kill" + i);	
+		while(kill) {
+			kill = false;
+			for (int queen = 0; queen < 8; queen++) {
+			
+				
+				int i = model.canKill(queen);
+				if(i != -1) {
+					logger.info(agName+" can kill" + " queen" + (i+1));
+					kill = true;
+					try {
+						int x, y;
+						do {
+							x = random.nextInt(model.boardSize);
+							y = random.nextInt(model.boardSize);
+						} while (model.validMovement(i,x,y));
+						model.moveTo(i,x,y);
+					} catch (Exception e) {
+						e.printStackTrace();	
+					}
+				}
+			}
 		}
-		
-		try {
-			//model.moveTo(1,1,0);
-		} catch (Exception e) {
-			e.printStackTrace();	
-		}
-		
         return true;
     }
 	
@@ -59,5 +73,6 @@ public class Board extends Environment {
 		
 		addPercept(pos1);
 	}
+	
 }
 
