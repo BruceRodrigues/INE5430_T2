@@ -18,11 +18,13 @@ class BoardModel extends GridWorldModel {
 		private Logger logger = Logger.getLogger("ChessQueens.mas2j."+Board.class.getName());
 		public static final int boardSize = 8;
 		
+		public static final int nQueens = 3;
+		
 		//Choose to where the queen will move
 		Random random = new Random(System.currentTimeMillis());
 		
 		public BoardModel() {
-			super(boardSize,boardSize,8);
+			super(boardSize,boardSize,nQueens);
 			
 			/**
 			* Pos(AgID, row, column);
@@ -33,11 +35,11 @@ class BoardModel extends GridWorldModel {
 			setAgPos(0,5,7); //Queen 1 -> pos (0,0)
 			setAgPos(1,0,7); //Queen 2 -> pos (7,7)
 			setAgPos(2,1,1); //Queen 3 ...
-			setAgPos(3,2,1);
-			setAgPos(4,5,6);
-			setAgPos(5,7,7);
-			setAgPos(6,3,4);
-			setAgPos(7,6,2);
+			//setAgPos(3,2,1);
+			//setAgPos(4,5,6);
+			//setAgPos(5,7,7);
+			//setAgPos(6,3,4);
+			//setAgPos(7,6,2);
 		}
 		
 		
@@ -58,9 +60,9 @@ class BoardModel extends GridWorldModel {
 						if ((r != l.y && c == l.x) || (r == l.y && c != l.x)) {
 								return q;	
 						}
-						//if(Math.abs(l.x-c) == Math.abs(l.y-r)) {
-						//	return q;	
-						//}
+						if(Math.abs(l.x-c) == Math.abs(l.y-r)) {
+							return q;	
+						}
 					}
 				}
 			}

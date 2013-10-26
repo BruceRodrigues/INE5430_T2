@@ -43,7 +43,7 @@ public class Board extends Environment {
 		
 		while(kill) {
 			kill = false;
-			for (int queen = 0; queen < 8; queen++) {
+			for (int queen = 0; queen < model.nQueens; queen++) {
 			
 				
 				int i = model.canKill(queen);
