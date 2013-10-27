@@ -13,39 +13,44 @@ import java.util.logging.Logger;
 
 
 class BoardModel extends GridWorldModel {
-		
-	
-		private Logger logger = Logger.getLogger("ChessQueens.mas2j."+Board.class.getName());
 		public static final int boardSize = 8;
-		
 		public static final int nQueens = 3;
-		
-		//Choose to where the queen will move
-		Random random = new Random(System.currentTimeMillis());
+	    private Logger logger = Logger.getLogger(
+			"ChessQueens.mas2j." + BoardModel.class.getName());
+		private Random random = new Random(System.currentTimeMillis());
 		
 		public BoardModel() {
-			super(boardSize,boardSize,nQueens);
+			super(boardSize, boardSize, nQueens);
 			
-			/**
-			* Pos(AgID, row, column);
-			*/
-			
-			//Choose initial location of the queens
-			//Add other queens here!
-			setAgPos(0,5,7); //Queen 1 -> pos (0,0)
-			setAgPos(1,0,7); //Queen 2 -> pos (7,7)
-			setAgPos(2,1,1); //Queen 3 ...
-			//setAgPos(3,2,1);
-			//setAgPos(4,5,6);
-			//setAgPos(5,7,7);
-			//setAgPos(6,3,4);
-			//setAgPos(7,6,2);
+			for(int i = 0; i < nQueens; i++) {
+				initializeQueenPosition(i);
+			}
 		}
 		
-		
-		void moveTo(int ag, int x, int y) throws Exception {
-			logger.info("queen" + ag + " will move to row " + y + " column " + x); 
-			setAgPos(ag,x,y);
+		private void initializeQueenPosition(int queenId) {
+			boolean validPosition = false;
+			int posX = 0;
+			int posY = 0;
+			while(!validPosition) {
+				posX = random.nextInt(boardSize);
+				posY = random.nextInt(boardSize);
+				setAgPos(
+					queenId,
+					posX,
+					posY
+				);
+				validPosition = true;
+				
+				// Verify if this position wasn't already taken by previous
+				// queens
+				for(int j = 0; j < queenId; j++) {
+					if(getAgPos(queenId).x == getAgPos(j).x &&
+					getAgPos(queenId).y == getAgPos(j).y) {
+					   validPosition = false;
+					   break;
+					}
+				}
+			}
 		}
 		
 		//This method will check if the agent ag can kill another agent

@@ -1,0 +1,13 @@
+/* Jason Project */
+
+MAS iA8Queens {
+
+    infrastructure: Centralised
+	
+    environment: Board
+
+    agents:
+		queen1;
+		queen2;
+}
+

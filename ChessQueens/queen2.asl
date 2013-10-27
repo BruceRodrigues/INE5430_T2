@@ -1,20 +1,33 @@
-// Agent Queen2 in project ChessQueens.mas2j
-
 /* Initial beliefs and rules */
+pos(queen2, 1, 1).
 
-at(P) :- pos(P,X,Y) & pos(queen2,X,Y).
-
-/* Initial goals */
-
-/*AgID =  1 */
-
-!start.
+start.
 
 /* Plans */
++start <-
+	.send(queen1, askOne, pos(queen1, A, B), pos(queen1, Y, Z)).
 
-+!start : true <- move(1,1,1).
+//	queenActions.shouldIMove(X);
+//	-iDontKnowIfThereIsSomeoneInMyLine;
+//	+iAmAlmostSureThereIsNoOneInMyLine.
 
-+!at(L) : at(L).
-+!at(L) <- ?pos(L,X,Y);
-           move(1,X,Y);
-           !at(L).
+//+iAmAlmostSureThereIsNoOneInMyLine <-
+	
+//-weShouldOrganizeVertically : not queenActions.weAreOrganizedVertically <-
+//	.print("It seems that we are NOT organized vertically.");
+//	+weShouldOrganizeVertically.
+//-weShouldOrganizeVertically : queenActions.weAreOrganizedVertically <-
+//	.print("It seems that we are organized vertically.");
+//	+weShouldOrganizeHorizontally.
+
+//+otherQueensDoesntKnowWhereIAm <-
+//	.broadcast(tell, maybeShouldMove);
+//	-otherQueensDoesntKnowWhereIAm.
+
+//+maybeShouldMove[source(A)] : queenActions.shouldIMove(A) <-
+//	-maybeShouldMove[source(A)];
+//	+otherQueensDoesntKnowWhereIAm.
+//+maybeShouldMove[source(A)] : not queenActions.shouldIMove(A) <-
+//	.print("I will not move!");
+//	-maybeShouldMove[source(A)].
+
