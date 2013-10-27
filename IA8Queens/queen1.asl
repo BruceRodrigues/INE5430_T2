@@ -9,10 +9,38 @@ iShouldChangeMyVerticalPos.
 +!start : true <-
 	updatePerceptions.
 
++weShouldRestart <-
+	.print("Our solution seems wrong. Lets try again.");
+	-someoneHasFixedColumn;
+	-everyoneInPlace;
+	-weShouldRestart;
+	-~iAmInVerticalDanger[source(percept)];
+	+iShouldChangeMyVerticalPos;
+	+iAmInVerticalDanger[source(percept)].
+
++everyoneInPlace : not weShouldRestart <-
+	testIfWeShouldRestart;
+	-waitForOthers;
+	-everyoneInPlace.
+-everyoneInPlace : not weShouldRestart <-
+	+everyoneInPlace.
+
++waitForOthers : not everyoneInPlace <-
+	testIfEveryoneIsInPlace;
+	-waitForOthers.
+-waitForOthers : not everyoneInPlace <-
+	+waitForOthers.
+
++someoneHasFixedColumn[source(A)] <-
+	-someoneHasFixedColumn;
+	.print("congrats, ", A, " :)").
+
 +~iAmInVerticalDanger[source(percept)] <-
 	.print("I found an available column! [DONE]");
 	-iAmInVerticalDanger[source(percept)];
-	-iShouldChangeMyVerticalPos.
+	-iShouldChangeMyVerticalPos;
+	.broadcast(tell, someoneHasFixedColumn);
+	+waitForOthers.
 
 +iAmInVerticalDanger[source(percept)]
 	: not ~iAmInVerticalDanger[source(percept)] & iShouldChangeMyVerticalPos <-
@@ -22,6 +50,7 @@ iShouldChangeMyVerticalPos.
 
 +startHorizontalSearch <-
 	.print("I will search for a good vertical location, now.");
+	-shouldTestIfIShouldStartHorizontalSearch;
 	+iAmInVerticalDanger[source(percept)].
 
 +shouldTestIfIShouldStartHorizontalSearch : not startHorizontalSearch <-

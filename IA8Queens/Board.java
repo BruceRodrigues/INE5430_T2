@@ -58,6 +58,39 @@ public class Board extends Environment {
 			Literal.LPos, "startHorizontalSearch");
 		addPercept(agentName, horizontalSearchLiteral);
 	}
+
+	public void testIfWeShouldRestart(int agId) {
+		String agentName = "queen" + (agId + 1);
+		
+		for(int i = 0; i < numberOfQueens - 1; i++) {
+			for(int j = i + 1; j < numberOfQueens; j++) {
+				Location agentLocation1 = model.getAgPos(i);
+				Location agentLocation2 = model.getAgPos(j);
+				if(canKillDiagonal(agentLocation1, agentLocation2)) {
+					Literal shouldRestartLiteral = ASSyntax.createLiteral(
+						Literal.LPos, "weShouldRestart");
+					addPercept(agentName, shouldRestartLiteral);
+				}
+			}
+		}
+	}
+
+	public void testIfEveryoneIsInPlace(int agId) {
+		String agentName = "queen" + (agId + 1);
+		
+		for(int i = 0; i < numberOfQueens - 1; i++) {
+			for(int j = i + 1; j < numberOfQueens; j++) {
+				Location agentLocation1 = model.getAgPos(i);
+				Location agentLocation2 = model.getAgPos(j);
+				if(canKill(agentLocation1, agentLocation2) ||
+					canKillVertical(agentLocation1, agentLocation2))
+					return;
+			}
+		}
+		Literal everyoneInPlaceLiteral = ASSyntax.createLiteral(
+			Literal.LPos, "everyoneInPlace");
+		addPercept(agentName, everyoneInPlaceLiteral);
+	}
 	
 	public void updateAgPercept(int agId) {
 		String agentName = "queen" + (agId + 1);
@@ -135,6 +168,12 @@ public class Board extends Environment {
 		} else if(action.getFunctor().equals("updatePerceptionsVertical")) {
 			updateAgPerceptVertical(agentNameToViewId(agentName));
 			result = true;
+		} else if(action.getFunctor().equals("testIfEveryoneIsInPlace")) {
+			testIfEveryoneIsInPlace(agentNameToViewId(agentName));
+			result = true;
+		} else if(action.getFunctor().equals("testIfWeShouldRestart")) {
+			testIfWeShouldRestart(agentNameToViewId(agentName));
+			result = true;
 		} else {
 			logger.info("executing: " + action + ", but not implemented!");
 			result = false;
@@ -151,7 +190,7 @@ public class Board extends Environment {
 		Location agentLocation = model.getAgPos(agentId);
 		Random r = new Random();
 		
-		try {Thread.sleep(r.nextInt(1000)); } catch(Exception e) {}
+		try {Thread.sleep(r.nextInt(500)); } catch(Exception e) {}
 		
 		if(down) agentLocation.y++;
 		else agentLocation.y--;
@@ -173,9 +212,9 @@ public class Board extends Environment {
 		Location agentLocation = model.getAgPos(agentId);
 		Random r = new Random();
 		
-		try {Thread.sleep(r.nextInt(1000)); } catch(Exception e) {}
+//		try {Thread.sleep(r.nextInt(1000)); } catch(Exception e) {}
 		
-		if(right) agentLocation.x++;
+		if(r.nextInt(1000) > 500) agentLocation.x++;
 		else agentLocation.x--;
 		
 		if(agentLocation.x >= boardSize) { agentLocation.x = boardSize - 1; right = false; }
