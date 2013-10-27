@@ -14,7 +14,6 @@ public class Board extends Environment {
 		}
 	}
 
-	private boolean a;
 	private final int boardSize = 8;
 	private final int numberOfQueens = 8;
 	private BoardModel model;
@@ -28,7 +27,6 @@ public class Board extends Environment {
 		view = new GridWorldView(model, "8 Queens", 600);
 		model.setView(view);
 		view.setVisible(true);
-		a = true;
 		
 		initializeAgsPositions();
 	}
@@ -153,7 +151,6 @@ public class Board extends Environment {
 		if(down) agentLocation.y++;
 		else agentLocation.y--;
 
-		
 		if(agentLocation.y >= boardSize) { agentLocation.y = boardSize - 1; down = false; }
 		if(agentLocation.y < 0) { agentLocation.y = 0; down = true; }
 		
@@ -163,19 +160,21 @@ public class Board extends Environment {
 			model.setAgPos(i, model.getAgPos(i));
 		view.update();
 	}
+
+	public boolean right = false;
 	
 	private void moveSomewhereElseVertical(String agentName) {
 		int agentId = agentNameToViewId(agentName);
 		Location agentLocation = model.getAgPos(agentId);
 		Random r = new Random();
-		if(r.nextInt(100) > 50) {
-			agentLocation.x++;
-		} else {
-			agentLocation.x--;
-		}
 		
-		if(agentLocation.x >= boardSize) agentLocation.x = boardSize - 1;
-		if(agentLocation.x < 0) agentLocation.x = 0;
+		try {Thread.sleep(r.nextInt(1000)); } catch(Exception e) {}
+		
+		if(right) agentLocation.x++;
+		else agentLocation.x--;
+		
+		if(agentLocation.x >= boardSize) { agentLocation.x = boardSize - 1; right = false; }
+		if(agentLocation.x < 0) { agentLocation.x = 0; right = true; }
 		
 		model.setAgPos(agentId, agentLocation);
 		// Bugfix: Force repaint all agents!
