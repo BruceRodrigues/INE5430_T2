@@ -1,5 +1,6 @@
 /* Initial beliefs and rules */
-iShouldChangeMyPos. // If I should change my line position
+iShouldChangeMyPos.
+iShouldChangeMyVerticalPos.
 
 /* Initial goals */
 !start.
@@ -8,8 +9,20 @@ iShouldChangeMyPos. // If I should change my line position
 +!start : true <-
 	updatePerceptions.
 
++~iAmInVerticalDanger[source(percept)] <-
+	.print("I found an available line! [DONE]");
+	-iAmInVerticalDanger[source(percept)];
+	-iShouldChangeMyVerticalPos.
+
++iAmInVerticalDanger[source(percept)]
+	: not ~iAmInVerticalDanger[source(percept)] & iShouldChangeMyVerticalPos <-
+	moveSomewhereElseVertical;
+	updatePerceptionsVertical;
+	-+iAmInVerticalDanger[source(percept)].
+
 +startHorizontalSearch <-
-	.print("We should probably start").
+	.print("I will search for a good vertical location, now.");
+	+iAmInVerticalDanger[source(percept)].
 
 +shouldTestIfIShouldStartHorizontalSearch : not startHorizontalSearch <-
 	testIfIShouldStartHorizontalSearch;

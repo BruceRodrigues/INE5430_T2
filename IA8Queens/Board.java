@@ -81,9 +81,36 @@ public class Board extends Environment {
 			Literal.LNeg, "iAmInDanger");
 		addPercept(agentName, dangerLiteral);
 	}	
+
+	public void updateAgPerceptVertical(int agId) {
+		String agentName = "queen" + (agId + 1);
+		// This may be danger...
+		clearPercepts(agentName);
+		
+		Location agentLocation = model.getAgPos(agId);
+		for(int i = 0; i < numberOfQueens; i++) {
+			if(i == agId) continue;
+			
+			Location otherAgentLocation = model.getAgPos(i);
+			if(canKillVertical(agentLocation, otherAgentLocation)) {
+				Literal dangerLiteral = ASSyntax.createLiteral(
+					Literal.LPos, "iAmInVerticalDanger");
+				addPercept(agentName, dangerLiteral);
+				return;
+			}
+		}
+		Literal dangerLiteral = ASSyntax.createLiteral(
+			Literal.LNeg, "iAmInVerticalDanger");
+		addPercept(agentName, dangerLiteral);
+	}	
 	
 	public boolean canKill(Location l1, Location l2) {
 		if(l1.y == l2.y) return true;
+		return false;
+	}
+	
+	public boolean canKillVertical(Location l1, Location l2) {
+		if(l1.x == l2.x) return true;
 		return false;
 	}
 
@@ -99,8 +126,15 @@ public class Board extends Environment {
 		} else if(action.getFunctor().equals("testIfIShouldStartHorizontalSearch")) {
 			updateShouldMoveHorizontally(agentNameToViewId(agentName));
 			result = true;
+		} else if(action.getFunctor().equals("moveSomewhereElseVertical")) {
+			moveSomewhereElseVertical(agentName);
+			result = true;
+		} else if(action.getFunctor().equals("updatePerceptionsVertical")) {
+			updateAgPerceptVertical(agentNameToViewId(agentName));
+			result = true;
 		} else {
 			logger.info("executing: " + action + ", but not implemented!");
+			result = false;
 		}
 		
 		try { Thread.sleep(100); } catch(Exception e) {}
@@ -119,6 +153,26 @@ public class Board extends Environment {
 		
 		if(agentLocation.y >= boardSize) agentLocation.y = boardSize - 1;
 		if(agentLocation.y < 0) agentLocation.y = 0;
+		
+		model.setAgPos(agentId, agentLocation);
+		// Bugfix: Force repaint all agents!
+		for(int i = 0; i < numberOfQueens; i++)
+			model.setAgPos(i, model.getAgPos(i));
+		view.update();
+	}
+	
+	private void moveSomewhereElseVertical(String agentName) {
+		int agentId = agentNameToViewId(agentName);
+		Location agentLocation = model.getAgPos(agentId);
+		Random r = new Random();
+		if(r.nextInt(100) > 50) {
+			agentLocation.x++;
+		} else {
+			agentLocation.x--;
+		}
+		
+		if(agentLocation.x >= boardSize) agentLocation.x = boardSize - 1;
+		if(agentLocation.x < 0) agentLocation.x = 0;
 		
 		model.setAgPos(agentId, agentLocation);
 		// Bugfix: Force repaint all agents!
