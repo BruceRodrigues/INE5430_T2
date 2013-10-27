@@ -1,13 +1,26 @@
 /* Initial beliefs and rules */
-/* I have no assumptions about the world. */
+iShouldChangeMyPos.
 
 /* Initial goals */
+!start.
 
 /* Plans */
-+iAmInDanger : not iWillNotChangeMyPos <-
-	moveSomewhereElse;
-	-iAmInDanger.
++!start : true <-
+	updatePerceptions.
 
-+iWillNotChangeMyPos <-
++~iAmInDanger[source(percept)] <-
+	.print("I am not in danger... [DONE]");
+	-iAmInDanger[source(percept)];
+	-iShouldChangeMyPos.
 	// Broadcast that I have my Y pos :)
-	.print("..").
+
++iAmInDanger[source(percept)]
+	// Only runs this if the agent is absolutely certain that he IS in danger
+	// AND he should change my position (he did not found a position available
+	// in the past).
+	: not ~iAmInDanger[source(percept)] & iShouldChangeMyPos <-
+	.print("I am in danger!!");
+	moveSomewhereElse;
+	updatePerceptions;
+	-+iAmInDanger[source(percept)].
+

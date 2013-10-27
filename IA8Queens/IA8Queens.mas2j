@@ -9,5 +9,11 @@ MAS iA8Queens {
     agents:
 		queen1;
 		queen2;
+		queen3;
+		queen4;
+		queen5;
+		queen6;
+		queen7;
+		queen8;
 }
 

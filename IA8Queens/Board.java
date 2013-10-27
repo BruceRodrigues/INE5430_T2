@@ -14,6 +14,7 @@ public class Board extends Environment {
 		}
 	}
 
+	private boolean a;
 	private final int boardSize = 8;
 	private final int numberOfQueens = 8;
 	private BoardModel model;
@@ -27,9 +28,9 @@ public class Board extends Environment {
 		view = new GridWorldView(model, "8 Queens", 600);
 		model.setView(view);
 		view.setVisible(true);
+		a = true;
 		
 		initializeAgsPositions();
-		updateAgsPercept();
 	}
 	
 	public void initializeAgsPositions() {
@@ -38,11 +39,9 @@ public class Board extends Environment {
 			model.setAgPos(i, r.nextInt(boardSize), r.nextInt(boardSize));
 			view.update();
 		}
-	}
-	
-	public void updateAgsPercept() {
-		for(int i = 0; i < numberOfQueens; i++)
-			updateAgPercept(i);
+		model.setAgPos(0, 1, 1);
+		model.setAgPos(1, 5, 1);
+		model.setAgPos(2, 3, 1);
 	}
 	
 	public void updateAgPercept(int agId) {
@@ -55,14 +54,16 @@ public class Board extends Environment {
 			
 			Location otherAgentLocation = model.getAgPos(i);
 			if(canKill(agentLocation, otherAgentLocation)) {
-				Literal iAmInDanger = ASSyntax.createLiteral("iAmInDanger");
-				addPercept(agentName, iAmInDanger);
+				Literal dangerLiteral = ASSyntax.createLiteral(
+					Literal.LPos, "iAmInDanger");
+				addPercept(agentName, dangerLiteral);
 				return;
 			}
 		}
-		Literal iWillNotChangeMyPos =
-			ASSyntax.createLiteral("iWillNotChangeMyPos");
-		addPercept(agentName, iWillNotChangeMyPos);
+		logger.info(agentName + " canNOT be killed!");
+		Literal dangerLiteral = ASSyntax.createLiteral(
+			Literal.LNeg, "iAmInDanger");
+		addPercept(agentName, dangerLiteral);
 	}
 	
 	public boolean canKill(Location l1, Location l2) {
@@ -71,15 +72,40 @@ public class Board extends Environment {
 	}
 
     @Override
-    public boolean executeAction(String agName, Structure action) {
+    public boolean executeAction(String agentName, Structure action) {
+		boolean result = false;
 		if(action.getFunctor().equals("moveSomewhereElse")) {
-			logger.info(agName + " should move.");
-			return true;
+			logger.info(agentName + " should move.");
+			moveSomewhereElse(agentName);
+			result = true;
+		} else if(action.getFunctor().equals("updatePerceptions")) {
+			logger.info(agentName + " updated!");
+			updateAgPercept(agentNameToViewId(agentName));
+			result = true;
 		} else {
 			logger.info("executing: " + action + ", but not implemented!");
 		}
-		return false;
+		
+		try { Thread.sleep(150); } catch(Exception e) {}
+		return result;
     }
+	
+	private void moveSomewhereElse(String agentName) {
+		int agentId = agentNameToViewId(agentName);
+		Location agentLocation = model.getAgPos(agentId);
+		Random r = new Random();
+		if(r.nextInt(100) > 50) {
+			agentLocation.y++;
+		} else {
+			agentLocation.y--;
+		}
+		
+		if(agentLocation.y >= boardSize) agentLocation.y = boardSize - 1;
+		if(agentLocation.y < 0) agentLocation.y = 0;
+		
+		model.setAgPos(agentId, agentLocation);
+		view.update();
+	}
 	
 	private int agentNameToViewId(String agentName) {
 		return Integer.parseInt(
