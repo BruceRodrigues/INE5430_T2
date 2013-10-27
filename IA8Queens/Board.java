@@ -107,18 +107,21 @@ public class Board extends Environment {
 		return result;
     }
 	
+	public boolean down = false;
+	
 	private void moveSomewhereElse(String agentName) {
 		int agentId = agentNameToViewId(agentName);
 		Location agentLocation = model.getAgPos(agentId);
 		Random r = new Random();
-		if(r.nextInt(100) > 50) {
-			agentLocation.y++;
-		} else {
-			agentLocation.y--;
-		}
 		
-		if(agentLocation.y >= boardSize) agentLocation.y = boardSize - 1;
-		if(agentLocation.y < 0) agentLocation.y = 0;
+		try {Thread.sleep(r.nextInt(1000)); } catch(Exception e) {}
+		
+		if(down) agentLocation.y++;
+		else agentLocation.y--;
+
+		
+		if(agentLocation.y >= boardSize) { agentLocation.y = boardSize - 1; down = false; }
+		if(agentLocation.y < 0) { agentLocation.y = 0; down = true; }
 		
 		model.setAgPos(agentId, agentLocation);
 		// Bugfix: Force repaint all agents!
