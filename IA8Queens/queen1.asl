@@ -10,7 +10,7 @@ iShouldChangeMyVerticalPos.
 	updatePerceptions.
 
 +~iAmInVerticalDanger[source(percept)] <-
-	.print("I found an available line! [DONE]");
+	.print("I found an available column! [DONE]");
 	-iAmInVerticalDanger[source(percept)];
 	-iShouldChangeMyVerticalPos.
 
