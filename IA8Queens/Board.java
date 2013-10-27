@@ -111,6 +111,11 @@ public class Board extends Environment {
 		if(l1.x == l2.x) return true;
 		return false;
 	}
+	
+	public boolean canKillDiagonal(Location l1, Location l2) {
+		if(Math.abs(l1.x - l2.x) == Math.abs(l1.y - l2.y)) return true;
+		return false;
+	}
 
     @Override
     public boolean executeAction(String agentName, Structure action) {
