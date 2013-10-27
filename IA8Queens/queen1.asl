@@ -1,5 +1,5 @@
 /* Initial beliefs and rules */
-iShouldChangeMyPos.
+iShouldChangeMyPos. // If I should change my line position
 
 /* Initial goals */
 !start.
@@ -8,18 +8,29 @@ iShouldChangeMyPos.
 +!start : true <-
 	updatePerceptions.
 
++startHorizontalSearch <-
+	.print("We should probably start").
+
++shouldTestIfIShouldStartHorizontalSearch : not startHorizontalSearch <-
+	testIfIShouldStartHorizontalSearch;
+	-+shouldTestIfIShouldStartHorizontalSearch.
+	
++someoneHasFixedLine[source(A)] <-
+	-someoneHasFixedLine;
+	.print("congrats, ", A, " :)").
+
 +~iAmInDanger[source(percept)] <-
-	.print("I am not in danger... [DONE]");
+	.print("I found an available line! [DONE]");
 	-iAmInDanger[source(percept)];
-	-iShouldChangeMyPos.
-	// Broadcast that I have my Y pos :)
+	-iShouldChangeMyPos;
+	.broadcast(tell, someoneHasFixedLine);
+	+shouldTestIfIShouldStartHorizontalSearch.
 
 +iAmInDanger[source(percept)]
 	// Only runs this if the agent is absolutely certain that he IS in danger
 	// AND he should change my position (he did not found a position available
 	// in the past).
 	: not ~iAmInDanger[source(percept)] & iShouldChangeMyPos <-
-	.print("I am in danger!!");
 	moveSomewhereElse;
 	updatePerceptions;
 	-+iAmInDanger[source(percept)].

@@ -39,9 +39,26 @@ public class Board extends Environment {
 			model.setAgPos(i, r.nextInt(boardSize), r.nextInt(boardSize));
 			view.update();
 		}
-		model.setAgPos(0, 1, 1);
-		model.setAgPos(1, 5, 1);
-		model.setAgPos(2, 3, 1);
+	}
+	
+	public void updateShouldMoveHorizontally(int agId) {
+		String agentName = "queen" + (agId + 1);
+		
+		for(int i = 0; i < numberOfQueens - 1; i++) {
+			for(int j = i + 1; j < numberOfQueens; j++) {
+				Location agentLocation1 = model.getAgPos(i);
+				Location agentLocation2 = model.getAgPos(j);
+				if(canKill(agentLocation1, agentLocation2)) {
+					return;
+				}
+			}
+		}
+		
+		// This is not absolutely certain, but we have a strong feeling that we
+		// can start moving.
+		Literal horizontalSearchLiteral = ASSyntax.createLiteral(
+			Literal.LPos, "startHorizontalSearch");
+		addPercept(agentName, horizontalSearchLiteral);
 	}
 	
 	public void updateAgPercept(int agId) {
@@ -60,11 +77,10 @@ public class Board extends Environment {
 				return;
 			}
 		}
-		logger.info(agentName + " canNOT be killed!");
 		Literal dangerLiteral = ASSyntax.createLiteral(
 			Literal.LNeg, "iAmInDanger");
 		addPercept(agentName, dangerLiteral);
-	}
+	}	
 	
 	public boolean canKill(Location l1, Location l2) {
 		if(l1.y == l2.y) return true;
@@ -75,18 +91,19 @@ public class Board extends Environment {
     public boolean executeAction(String agentName, Structure action) {
 		boolean result = false;
 		if(action.getFunctor().equals("moveSomewhereElse")) {
-			logger.info(agentName + " should move.");
 			moveSomewhereElse(agentName);
 			result = true;
 		} else if(action.getFunctor().equals("updatePerceptions")) {
-			logger.info(agentName + " updated!");
 			updateAgPercept(agentNameToViewId(agentName));
+			result = true;
+		} else if(action.getFunctor().equals("testIfIShouldStartHorizontalSearch")) {
+			updateShouldMoveHorizontally(agentNameToViewId(agentName));
 			result = true;
 		} else {
 			logger.info("executing: " + action + ", but not implemented!");
 		}
 		
-		try { Thread.sleep(150); } catch(Exception e) {}
+		try { Thread.sleep(100); } catch(Exception e) {}
 		return result;
     }
 	
@@ -104,6 +121,9 @@ public class Board extends Environment {
 		if(agentLocation.y < 0) agentLocation.y = 0;
 		
 		model.setAgPos(agentId, agentLocation);
+		// Bugfix: Force repaint all agents!
+		for(int i = 0; i < numberOfQueens; i++)
+			model.setAgPos(i, model.getAgPos(i));
 		view.update();
 	}
 	
